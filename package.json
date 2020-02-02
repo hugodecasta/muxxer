@@ -1,0 +1,18 @@
+{
+  "name": "muxxer",
+  "description": "redirect your hosts",
+  "version": "0.0.1",
+  "main": "muxxer.js",
+  "scripts": {
+    "test": "echo \"no tests yet\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hugodecasta/muxxer.git"
+  },
+  "author": "hugo castaneda",
+  "dependencies": {
+    "express": "^4.17.1",
+    "fs": "0.0.1-security"
+  }
+}
