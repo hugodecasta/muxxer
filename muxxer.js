@@ -42,7 +42,13 @@ function find_redirector(host) {
     let abs_name = name+(domain==''?'':('.'+domain))
     let sub_d = (name=='localhost'?sp_host[1]:sp_host[2]) || ''
 
-    const redirect_map = JSON.parse(fs.readFileSync(__dirname+'/redirect.json','utf8'))
+    let map_path = __dirname+'/redirect.json'
+    if(!fs.existsSyncmap_path(map_path)) {
+        console.log('Redirect map "redirect.json" missing !')
+        return null
+    }
+
+    const redirect_map = JSON.parse(fs.readFileSync(map_path,'utf8'))
 
     if(abs_name in redirect_map) {
         while(typeof redirect_map[abs_name] === 'string') {
