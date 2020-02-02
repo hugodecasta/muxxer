@@ -42,7 +42,7 @@ function find_redirector(host) {
     let abs_name = name+(domain==''?'':('.'+domain))
     let sub_d = (name=='localhost'?sp_host[1]:sp_host[2]) || ''
 
-    const redirect_map = JSON.parse(fs.readFileSync('redirect.json','utf8'))
+    const redirect_map = JSON.parse(fs.readFileSync(__dirname+'/redirect.json','utf8'))
 
     if(abs_name in redirect_map) {
         while(typeof redirect_map[abs_name] === 'string') {
@@ -65,12 +65,15 @@ app.all('/*',function(req, res) {
     // --- finding redirectori
 
     let host = req.hostname
+    
+    console.log('in host:',host,req.socket.localPort,req.path)
 
     let redirector = find_redirector(host)
 
     // --- imposible cases
 
     if(redirector == null || redirector.allowed_methods.indexOf(req.method)==-1) {
+        console.log('   no redirect || not allowed')
         res.status(404)
         res.sendFile(__dirname+'/404.html')
         return
@@ -88,6 +91,8 @@ app.all('/*',function(req, res) {
         method: req.method,
         headers: headers,
     }
+
+    console.log('   redirect to:',options.host,options.port,options.path)
 
     // --- http request
 
