@@ -43,7 +43,7 @@ function find_redirector(host) {
     let sub_d = (name=='localhost'?sp_host[1]:sp_host[2]) || ''
 
     let map_path = __dirname+'/redirect.json'
-    if(!fs.existsSyncmap_path(map_path)) {
+    if(!fs.existsSync(map_path)) {
         console.log('Redirect map "redirect.json" missing !')
         return null
     }
