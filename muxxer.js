@@ -10,6 +10,7 @@ const fs = require('fs')
 
 const app = express()
 const port = process.argv[2] || 8080
+const map_path = process.argv[3] || './redirect.json'
 
 // ------------------------------------------------ CONFIG
 
@@ -42,9 +43,8 @@ function find_redirector(host) {
     let abs_name = name+(domain==''?'':('.'+domain))
     let sub_d = (name=='localhost'?sp_host[1]:sp_host[2]) || ''
 
-    let map_path = __dirname+'/redirect.json'
     if(!fs.existsSync(map_path)) {
-        console.log('Redirect map "redirect.json" missing !')
+        console.log('Redirect map "'+map_path+'" missing !')
         return null
     }
 
