@@ -34,6 +34,35 @@ function fill_redirector_blank(redirector) {
 
 // ------------------------------------------------ FIND REDIRECTOR
 
+function extend_map(map) {
+    let variables = {}
+
+    function update_prop(map) {
+        map = JSON.parse(JSON.stringify(map))
+        if(typeof map === 'string') {
+            if(map.includes('@')) {
+                return variables[map.replace('@','')]
+            }
+        } else {
+            for(let prop in map) {
+                map[prop] = update_prop(map[prop])
+                variables[prop.replace('#','')] = map[prop]
+            }
+        }
+        return map
+    }
+
+    map = update_prop(map)
+    let final_map = {}
+    for(let prop in map) {
+        if(!prop.includes('#')) {
+            final_map[prop] = map[prop]
+        }
+    }
+
+    return final_map    
+}
+
 function find_redirector(host) {
     let sp_host = host.split('.').reverse()
 
@@ -48,7 +77,7 @@ function find_redirector(host) {
         return null
     }
 
-    const redirect_map = JSON.parse(fs.readFileSync(map_path,'utf8'))
+    const redirect_map = extend_map(JSON.parse(fs.readFileSync(map_path,'utf8')))
 
     if(abs_name in redirect_map) {
         while(typeof redirect_map[abs_name] === 'string') {
@@ -107,7 +136,9 @@ app.all('/*',function(req, res) {
         // --- recieve and repipe response
 
         const contentType = proxy_res.headers['content-type']
-        res.setHeader('Content-Type', contentType)
+        if(contentType !== undefined) {
+            res.setHeader('Content-Type', contentType)
+        }
         proxy_res.pipe(res)
 
     })
