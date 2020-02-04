@@ -2,6 +2,7 @@
 
 // ------------------------------------------------ IMPORTS
 
+const logger = require('log-to-file')
 const express = require('express')
 const http = require('http')
 const fs = require('fs')
@@ -15,6 +16,10 @@ const map_path = process.argv[3] || './redirect.json'
 // ------------------------------------------------ CONFIG
 
 app.enable('trust proxy')
+function log() {
+    console.log.apply(console, arguments);
+    logger(Array.from(arguments).join(' '),'log.log')
+}
 
 // ------------------------------------------------ REBASE
 
@@ -79,7 +84,7 @@ function find_redirector(host) {
     let sub_d = (domain==''?sp_host[1]:sp_host[2]) || ''
 
     if(!fs.existsSync(map_path)) {
-        console.log('Redirect map "'+map_path+'" missing !')
+        log('Redirect map "'+map_path+'" missing !')
         return null
     }
 
@@ -107,14 +112,14 @@ app.all('/*',function(req, res) {
 
     let host = req.hostname
     
-    console.log('in host:',host,req.socket.localPort,req.path)
+    log('in host:',host,req.socket.localPort,req.path)
 
     let redirector = find_redirector(host)
 
     // --- imposible cases
 
     if(redirector == null || redirector.allowed_methods.indexOf(req.method)==-1) {
-        console.log('   no redirect || not allowed')
+        log('   no redirect || not allowed')
         res.status(404)
         res.sendFile(__dirname+'/404.html')
         return
@@ -133,7 +138,7 @@ app.all('/*',function(req, res) {
         headers: headers,
     }
 
-    console.log('   redirect to:',options.host,options.port,options.path)
+    log('   redirect to:',options.host,options.port,options.path)
 
     // --- http request
 
@@ -151,11 +156,11 @@ app.all('/*',function(req, res) {
     // --- on request error
     .on('error', e => {
         try {
-            console.log('Error while redirecting - ',e.name,e.message)
+            log('Error while redirecting - ',e.name,e.message)
             res.writeHead(500)
             res.write(e.message)
         } catch (e) {
-            console.log('fatal error !',e.name,e.message)
+            log('fatal error !',e.name,e.message)
         }
         res.end()
     })
@@ -168,5 +173,5 @@ app.all('/*',function(req, res) {
 // ------------------------------------------------ EXECUTE
 
 app.listen(port, function () {
-    console.log('start muxxer a listening on',port)
+    log('start muxxer a listening on',port)
 })

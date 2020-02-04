@@ -13,6 +13,7 @@
   "author": "hugo castaneda",
   "dependencies": {
     "express": "^4.17.1",
-    "fs": "0.0.1-security"
+    "fs": "0.0.1-security",
+    "log-to-file": "^2.0.2"
   }
 }
