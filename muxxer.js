@@ -72,13 +72,11 @@ function find_redirector(host) {
         sp_host = [host]
     }
 
-    let domain = sp_host.length==1?'':sp_host[0]
-    let name = domain==''?sp_host[0]:sp_host[1]
+    let domain = sp_host[0]=='localhost'?'':sp_host[0]
+    let name = domain==''?'localhost':sp_host[1]
 
     let abs_name = name+(domain==''?'':('.'+domain))
-    let sub_d = (name=='localhost'?sp_host[1]:sp_host[2]) || ''
-
-    console.log(abs_name)
+    let sub_d = (domain==''?sp_host[1]:sp_host[2]) || ''
 
     if(!fs.existsSync(map_path)) {
         console.log('Redirect map "'+map_path+'" missing !')
