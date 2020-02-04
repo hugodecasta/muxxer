@@ -18,7 +18,9 @@ const map_path = process.argv[3] || './redirect.json'
 app.enable('trust proxy')
 function log() {
     console.log.apply(console, arguments);
-    logger(Array.from(arguments).join(' '),'log.log')
+    let str = Array.from(arguments).join(' ')
+    logger('[MUXXER] - '+str,'log.log')
+    logger(str,__dirname+'log.log')
 }
 
 // ------------------------------------------------ REBASE
