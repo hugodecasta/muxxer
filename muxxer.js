@@ -64,13 +64,21 @@ function extend_map(map) {
 }
 
 function find_redirector(host) {
+
     let sp_host = host.split('.').reverse()
 
-    let domain = sp_host[0]=='localhost'?'':sp_host[0]
-    let name = domain==''?'localhost':sp_host[1]
+    let is_ip = sp_host.length == 4 
+    if(is_ip) {
+        sp_host = [host]
+    }
+
+    let domain = sp_host.length==1?'':sp_host[0]
+    let name = domain==''?sp_host[0]:sp_host[1]
 
     let abs_name = name+(domain==''?'':('.'+domain))
     let sub_d = (name=='localhost'?sp_host[1]:sp_host[2]) || ''
+
+    console.log(abs_name)
 
     if(!fs.existsSync(map_path)) {
         console.log('Redirect map "'+map_path+'" missing !')
