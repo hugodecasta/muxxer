@@ -2,9 +2,11 @@
 
 // ------------------------------------------------ IMPORTS
 
+const bodyParser = require('body-parser')
 const logger = require('log-to-file')
 const express = require('express')
 const http = require('http')
+const cors = require('cors')
 const fs = require('fs')
 
 // ------------------------------------------------ VARS
@@ -15,7 +17,10 @@ const map_path = process.argv[3] || './redirect.json'
 
 // ------------------------------------------------ CONFIG
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}))
 app.enable('trust proxy')
+app.use(cors())
 function log() {
     console.log.apply(console, arguments);
     let str = Array.from(arguments).join(' ')
@@ -148,10 +153,11 @@ app.all('/*',function(req, res) {
 
         // --- recieve and repipe response
 
-        const contentType = proxy_res.headers['content-type']
-        if(contentType !== undefined) {
-            res.setHeader('Content-Type', contentType)
+        for(let h in proxy_res.headers) {
+            res.setHeader(h,proxy_res.headers[h])
         }
+        res.status(proxy_res.statusCode)
+
         proxy_res.pipe(res)
 
     })
@@ -166,6 +172,10 @@ app.all('/*',function(req, res) {
         }
         res.end()
     })
+    
+    if(req.method == 'POST') {
+        proxy_req.write(JSON.stringify(req.body))
+    }
 
     // --- end  request
 
